@@ -10,8 +10,8 @@ class Base:
         remoteURL = 'http://' + server_remote + ':9515/wd/hub';
 
         pathToChromedriver         = '/path/To/chromedriver/chromedriver'
-        pathToIEDriverServer_x64   = '/path/To/IEDriverServer_x64/IEDriverServer_x64'
-        pathToIEDriverServer_Win32 = '/path/To/IEDriverServer_Win32/IEDriverServer_Win32'
+        pathToIEDriverServer_x64   = '/path/To/IEDriverServer_x64/IEDriverServer.exe'
+        pathToIEDriverServer_Win32 = '/path/To/IEDriverServer_Win32/IEDriverServer.exe'
 
         self.driver = ''
         if   Web_Browser == "Mozilla Firefox":
@@ -28,14 +28,14 @@ class Base:
         elif Web_Browser == "Internet Explorer 32":
             self.driver =\
                 webdriver.Ie(
-                'C:/Selenium/bin/IEDriverServer_Win32/IEDriverServer.exe'
+                pathToIEDriverServer_Win32
                 )
             self.driver.maximize_window()
 
         elif Web_Browser == "Internet Explorer 64":
             self.driver =\
                 webdriver.Ie(
-                'C:/Selenium/bin/IEDriverServer_x64/IEDriverServer.exe'
+                pathToIEDriverServer_x64
                 )
             self.driver.maximize_window()
 
