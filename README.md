@@ -15,6 +15,7 @@ WebDriverを使用して実装しています。Google Codeでサポートされ
 - Node.js
   - Google Codeでサポートされている WebDriverJS を使用。
 - C#
+
 また、次のブラウザを使っています。
 - Mozilla Firefox
   - Windows
