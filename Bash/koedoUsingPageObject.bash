@@ -1,6 +1,7 @@
 #!/bin/bash
 
-. PageObject.bash
+SCRIPT_DIR=$(cd $(dirname $0);pwd)
+. ${SCRIPT_DIR}/PageObject.bash
 
 # Selenium Server 起動
 JAR_FILE="/home/hirofumi/Selenium/bin/selenium-server-standalone-2.53.0.jar"
