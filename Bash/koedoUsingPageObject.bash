@@ -14,8 +14,11 @@ ALIVE=`ps -ef | grep "${JAR_FILE}" | grep -v grep | wc -l`
 #java -jar /home/hirofumi/Selenium/bin/selenium-server-standalone-2.53.0.jar 
 
 #ウィンドウオープン
+#SESSION_ID=$(newSession "firefox")
+SESSION_ID=$(newSession "chrome")
 
-SESSION_ID=$(newSession)
+#ウィンドウ最大化
+maximizeWindow ${SESSION_ID}
 
 #Googleを開く
 URL='http://www.google.co.jp/'

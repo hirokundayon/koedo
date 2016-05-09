@@ -4,14 +4,35 @@
 #   新しいセッションを開始します。
 #
 function newSession() {
-  local RESPONSE=$(curl --request "POST" \
-    --data '{"desiredCapabilities":{"browserName":"firefox"},"requiredCapabilities":{}}' \
-    "http://localhost:4444/wd/hub/session")
+    local BROWSER=$1
+    local RESPONSE=""
 
-  local SESSION_ID=$(echo ${RESPONSE} | \
-    sed -e 's/^.*"sessionId":"\([^"]*\)".*/\1/g')
+    case ${BROWSER} in
+	firefox )
+	    RESPONSE=$(curl --request "POST" \
+			    --data '{"desiredCapabilities":{"browserName":"firefox"},"requiredCapabilities":{}}' \
+			    "http://localhost:4444/wd/hub/session")
+	    ;;
+	chrome )
+	    RESPONSE=$(curl --request "POST" \
+			    --data '{"desiredCapabilities":{"browserName":"chrome"},"requiredCapabilities":{}}' \
+			    "http://localhost:4444/wd/hub/session")
+	    ;;
+    esac
+    
+    local SESSION_ID=$(echo ${RESPONSE} | \
+			      sed -e 's/^.*"sessionId":"\([^"]*\)".*/\1/g')
+    echo ${SESSION_ID}
+}
 
-  echo ${SESSION_ID}
+# maximizeWindow
+#  Webブラウザのウィンドウを最大化します。
+#     $1 セッションID
+#
+function maximizeWindow() {
+    local SESSION_ID=$1
+    RESPONSE=$(curl --request "POST" \
+		    "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/window/maximize")
 }
 
 
@@ -21,12 +42,12 @@ function newSession() {
 #     $2 URL
 #
 function goURL() {
-  local SESSION_ID=$1
-  local URL=$2
+    local SESSION_ID=$1
+    local URL=$2
 
-  local RESPONSE=$(curl --request "POST" \
-    --data '{"url":"'${URL}'"}' \
-    "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/url")
+    local RESPONSE=$(curl --request "POST" \
+			  --data '{"url":"'${URL}'"}' \
+			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/url")
 }
 
 # waitByTitle
@@ -35,18 +56,18 @@ function goURL() {
 #     $2 タイトルの値
 #
 function waitByTitle() {
-  local SESSION_ID=$1
-  local VALUE=$2
+    local SESSION_ID=$1
+    local VALUE=$2
 
-  local TITLE=""
+    local TITLE=""
 
-  while [ "${TITLE}" != "${VALUE}" ]
-  do
-    local RESPONSE=$(curl --request "GET" \
-      "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/title")
-    TITLE=$(echo ${RESPONSE} | \
-		   sed -e 's/^.*"value":"\([^"]*\)".*$/\1/g')
-  done
+    while [ "${TITLE}" != "${VALUE}" ]
+    do
+	local RESPONSE=$(curl --request "GET" \
+			      "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/title")
+	TITLE=$(echo ${RESPONSE} | \
+		       sed -e 's/^.*"value":"\([^"]*\)".*$/\1/g')
+    done
 }
 
 # findElementByName
@@ -55,18 +76,18 @@ function waitByTitle() {
 #     $2 locator
 #
 function findElementByName() {
-  local SESSION_ID=$1
-  local SELECTOR='name'
-  local LOCATOR=$2
+    local SESSION_ID=$1
+    local SELECTOR='name'
+    local LOCATOR=$2
 
-  local RESPONSE=$(curl --request "POST" \
-    --data '{"using":"'${SELECTOR}'","value":"'${LOCATOR}'"}' \
-    "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
+    local RESPONSE=$(curl --request "POST" \
+			  --data '{"using":"'${SELECTOR}'","value":"'${LOCATOR}'"}' \
+			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
 
-  local ELEMENT_ID=$(echo ${RESPONSE} | \
-    sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
+    local ELEMENT_ID=$(echo ${RESPONSE} | \
+			      sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
 
-  echo "${ELEMENT_ID}"
+    echo "${ELEMENT_ID}"
 }
 
 # findElementByPartialLinkText
@@ -75,18 +96,18 @@ function findElementByName() {
 #     $2 locator
 #
 function findElementByPartialLinkText() {
-  local SESSION_ID=$1
-  local SELECTOR="partial link text"
-  local LOCATOR=$2
+    local SESSION_ID=$1
+    local SELECTOR="partial link text"
+    local LOCATOR=$2
 
-  local RESPONSE=$(curl --request "POST" \
-    --data '{"using":"partial link text","value":"'${LOCATOR}'"}' \
-    "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
+    local RESPONSE=$(curl --request "POST" \
+			  --data '{"using":"partial link text","value":"'${LOCATOR}'"}' \
+			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
 
-  local ELEMENT_ID=$(echo ${RESPONSE} | \
-    sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
+    local ELEMENT_ID=$(echo ${RESPONSE} | \
+			      sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
 
-  echo "${ELEMENT_ID}"
+    echo "${ELEMENT_ID}"
 }
 
 # findElementByLinkText
@@ -95,18 +116,18 @@ function findElementByPartialLinkText() {
 #     $2 locator
 #
 function findElementByLinkText() {
-  local SESSION_ID=$1
-  local SELECTOR="link text"
-  local LOCATOR=$2
+    local SESSION_ID=$1
+    local SELECTOR="link text"
+    local LOCATOR=$2
 
-  local RESPONSE=$(curl --request "POST" \
-    --data '{"using":"link text","value":"'${LOCATOR}'"}' \
-    "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
+    local RESPONSE=$(curl --request "POST" \
+			  --data '{"using":"link text","value":"'${LOCATOR}'"}' \
+			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
 
-  local ELEMENT_ID=$(echo ${RESPONSE} | \
-    sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
+    local ELEMENT_ID=$(echo ${RESPONSE} | \
+			      sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
 
-  echo "${ELEMENT_ID}"
+    echo "${ELEMENT_ID}"
 }
 
 # findElementByCSSselector
@@ -115,18 +136,18 @@ function findElementByLinkText() {
 #     $2 locator
 #
 function findElementByCSSselector() {
-  local SESSION_ID=$1
-  local SELECTOR='css selector'
-  local LOCATOR=$2
+    local SESSION_ID=$1
+    local SELECTOR='css selector'
+    local LOCATOR=$2
 
-  local RESPONSE=$(curl --request "POST" \
-    --data '{"using":"css selector","value":"'${LOCATOR}'"}' \
-    "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
+    local RESPONSE=$(curl --request "POST" \
+			  --data '{"using":"css selector","value":"'${LOCATOR}'"}' \
+			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
 
-  local ELEMENT_ID=$(echo ${RESPONSE} | \
-    sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
+    local ELEMENT_ID=$(echo ${RESPONSE} | \
+			      sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
 
-  echo "${ELEMENT_ID}"
+    echo "${ELEMENT_ID}"
 }
 
 # clickElement
@@ -135,11 +156,11 @@ function findElementByCSSselector() {
 #     $2 クリックする要素のELEMENT_ID
 #
 function clickElement() {
-  local SESSION_ID=$1
-  local ELEMENT_ID=$2
+    local SESSION_ID=$1
+    local ELEMENT_ID=$2
 
-  local RESPONSE=$(curl --request "POST" \
-    "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element/"${ELEMENT_ID}"/click")
+    local RESPONSE=$(curl --request "POST" \
+			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element/"${ELEMENT_ID}"/click")
 }
 
 # sendKeysToElement
@@ -149,13 +170,13 @@ function clickElement() {
 #     $3 打鍵データ
 #
 function sendKeysToElement() {
-  local SESSION_ID=$1
-  local ELEMENT_ID=$2
-  local KEYDATA=$3
+    local SESSION_ID=$1
+    local ELEMENT_ID=$2
+    local KEYDATA=$3
 
-  local RESPONSE=$(curl --request "POST" \
-    --data '{"value":["'${KEYDATA}'"]}' \
-    "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element/"${ELEMENT_ID}"/value")
+    local RESPONSE=$(curl --request "POST" \
+			  --data '{"value":["'${KEYDATA}'"]}' \
+			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element/"${ELEMENT_ID}"/value")
 }
 
 # deleteSession
@@ -163,8 +184,8 @@ function sendKeysToElement() {
 #     $1 セッションID
 #
 function deleteSession() {
-  local SESSION_ID=$1
+    local SESSION_ID=$1
 
-  local RESPONSE=$(curl --request "DELETE" \
-    "http://localhost:4444/wd/hub/session/"${SESSION_ID})
+    local RESPONSE=$(curl --request "DELETE" \
+			  "http://localhost:4444/wd/hub/session/"${SESSION_ID})
 }
