@@ -23,6 +23,11 @@ function newSession() {
 			    --data '{"desiredCapabilities":{"browserName":"internet explorer"},"requiredCapabilities":{}}' \
 			    "http://localhost:4444/wd/hub/session")
 	    ;;
+	Android )
+	    RESPONSE=$(curl --request "POST" \
+			    --data '{"desiredCapabilities":{"chromeOptions": {"androidPackage":"com.android.chrome"},"browserName":"chrome"},"requiredCapabilities":{}}' \
+			    "http://localhost:4444/wd/hub/session")
+	    ;;
     esac
     
     local SESSION_ID=$(echo ${RESPONSE} | \

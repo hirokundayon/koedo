@@ -3,10 +3,13 @@
 SCRIPT_DIR=$(cd $(dirname $0);pwd)
 . ${SCRIPT_DIR}/PageObject.bash
 
+BROWSER="firefox"
+#BROWSER="chrome"
+#BROWSER="ie"
+#BROWSER="Android"
+
 #ウィンドウオープン
-#SESSION_ID=$(newSession "firefox")
-#SESSION_ID=$(newSession "chrome")
-SESSION_ID=$(newSession "ie")
+SESSION_ID=$(newSession "${BROWSER}")
 
 #ウィンドウ最大化
 maximizeWindow ${SESSION_ID}
@@ -36,6 +39,15 @@ ELEMENT_ID=$(findElementByPartialLinkText ${SESSION_ID} "${LOCATOR}")
 
 clickElement ${SESSION_ID} ${ELEMENT_ID}
 
+#Androidの場合はPC版のページを表示させる
+if [ "${BROWSER}" = "Android" ]
+then
+  LOCATOR="img[src='/images/n/itpro/2010/leaf/btn_pc.gif']"
+  ELEMENT_ID=$(findElementByCSSselector ${SESSION_ID} "${LOCATOR}")
+
+  clickElement ${SESSION_ID} ${ELEMENT_ID}
+fi
+
 #日経Linuxの記事を表示させる
 TITLE_VALUE1="ITpro - エンタープライズICTの総合情報"
 TITLE_VALUE2="OSS支える！コミュニティー訪問 - 小江戸らぐ - 川越を中心にゆるく活動するLinuxユーザー会：ITpro"
@@ -53,7 +65,6 @@ then
 fi
 
 #写真をクリック
-
 LOCATOR="img[alt=小江戸らぐ]"
 ELEMENT_ID=$(findElementByCSSselector ${SESSION_ID} "${LOCATOR}")
 
