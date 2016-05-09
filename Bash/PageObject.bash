@@ -18,6 +18,11 @@ function newSession() {
 			    --data '{"desiredCapabilities":{"browserName":"chrome"},"requiredCapabilities":{}}' \
 			    "http://localhost:4444/wd/hub/session")
 	    ;;
+	ie )
+	    RESPONSE=$(curl --request "POST" \
+			    --data '{"desiredCapabilities":{"browserName":"internet explorer"},"requiredCapabilities":{}}' \
+			    "http://localhost:4444/wd/hub/session")
+	    ;;
     esac
     
     local SESSION_ID=$(echo ${RESPONSE} | \
@@ -68,6 +73,30 @@ function waitByTitle() {
 	TITLE=$(echo ${RESPONSE} | \
 		       sed -e 's/^.*"value":"\([^"]*\)".*$/\1/g')
     done
+}
+
+# waitByTitle2
+#   タイトルが指定された値になるまで待ちます。
+#     $1 セッションID
+#     $2 タイトル候補その1
+#     $3 タイトル候補その2
+#
+function waitByTitle2() {
+    local SESSION_ID=$1
+    local VALUE1=$2
+    local VALUE2=$3
+
+    local TITLE=""
+
+    while [ "${TITLE}" != "${VALUE1}" ] && [ "${TITLE}" != "${VALUE2}" ]
+    do
+	local RESPONSE=$(curl --request "GET" \
+			      "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/title")
+	TITLE=$(echo ${RESPONSE} | \
+		       sed -e 's/^.*"value":"\([^"]*\)".*$/\1/g')
+    done
+
+    echo ${TITLE}
 }
 
 # findElementByName
@@ -189,3 +218,4 @@ function deleteSession() {
     local RESPONSE=$(curl --request "DELETE" \
 			  "http://localhost:4444/wd/hub/session/"${SESSION_ID})
 }
+
