@@ -113,7 +113,7 @@ do
 <# 小江戸らぐを検索 #>
 $検索窓 = $driver.FindElementsByName("q");
 if ($browser.Contains("Edge")) {
-    $検索窓.SendKeys("koedo linux itpro");
+    $driver.ExecuteScript('elements = document.getElementsByName("q"); elements[0].value="小江戸らぐ"');
 } else {
     $検索窓.SendKeys("小江戸らぐ");
 }
@@ -127,11 +127,7 @@ do
 } until($title.Contains("Google 検索"))
 
 <# 日経Linuxの記事を表示させる #>
-if ($browser.Contains("Edge")) {
-    $link = $driver.FindElementByLinkText("小江戸らぐ - 川越を中心にゆるく活動するLinuxユーザー会 - ITpro");
-} else {
-    $link = $driver.FindElementByPartialLinkText("OSS支える！");
-}
+$link = $driver.FindElementByPartialLinkText("OSS支える！");
 $link.Click();
 
 <# Androidの場合はPC版のページを表示 #>
