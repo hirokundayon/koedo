@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # newSession
 #   新しいセッションを開始します。
@@ -21,6 +21,11 @@ function newSession() {
 	ie )
 	    RESPONSE=$(curl --request "POST" \
 			    --data '{"desiredCapabilities":{"browserName":"internet explorer"},"requiredCapabilities":{}}' \
+			    "http://localhost:4444/wd/hub/session")
+	    ;;
+	edge )
+	    RESPONSE=$(curl --request "POST" \
+			    --data '{"desiredCapabilities":{"browserName":"MicrosoftEdge"},"requiredCapabilities":{}}' \
 			    "http://localhost:4444/wd/hub/session")
 	    ;;
 	Android )
@@ -58,6 +63,18 @@ function goURL() {
     local RESPONSE=$(curl --request "POST" \
 			  --data '{"url":"'${URL}'"}' \
 			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/url")
+}
+
+# getTitle
+#   タイトルを取得します。
+#     $1 セッションID
+function getTitle() {
+    local SESSION_ID=$1
+    local RESPONSE=$(curl --request "GET" \
+			      "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/title")
+    local TITLE=$(echo ${RESPONSE} | \
+		       sed -e 's/^.*"value":"\([^"]*\)".*$/\1/g')
+    echo ${TITLE}
 }
 
 # waitByTitle
@@ -113,10 +130,17 @@ function findElementByName() {
     local SESSION_ID=$1
     local SELECTOR='name'
     local LOCATOR=$2
+    local RESPONSE=""
+    local STATE=""
 
-    local RESPONSE=$(curl --request "POST" \
+    while [ "${STATE}" != "success" ]
+    do
+        RESPONSE=$(curl --request "POST" \
 			  --data '{"using":"'${SELECTOR}'","value":"'${LOCATOR}'"}' \
 			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
+        STATE=$(echo ${RESPONSE} | \
+			      sed -e 's/^.*"state":"\([^"]*\)".*$/\1/g')
+    done
 
     local ELEMENT_ID=$(echo ${RESPONSE} | \
 			      sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
@@ -134,9 +158,17 @@ function findElementByPartialLinkText() {
     local SELECTOR="partial link text"
     local LOCATOR=$2
 
-    local RESPONSE=$(curl --request "POST" \
+    local RESPONSE=""
+    local STATE=""
+
+    while [ "${STATE}" != "success" ]
+    do
+        RESPONSE=$(curl --request "POST" \
 			  --data '{"using":"partial link text","value":"'${LOCATOR}'"}' \
 			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
+        STATE=$(echo ${RESPONSE} | \
+			      sed -e 's/^.*"state":"\([^"]*\)".*$/\1/g')
+    done
 
     local ELEMENT_ID=$(echo ${RESPONSE} | \
 			      sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
@@ -154,9 +186,17 @@ function findElementByLinkText() {
     local SELECTOR="link text"
     local LOCATOR=$2
 
-    local RESPONSE=$(curl --request "POST" \
+    local RESPONSE=""
+    local STATE=""
+
+    while [ "${STATE}" != "success" ]
+    do
+        RESPONSE=$(curl --request "POST" \
 			  --data '{"using":"link text","value":"'${LOCATOR}'"}' \
 			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
+        STATE=$(echo ${RESPONSE} | \
+			      sed -e 's/^.*"state":"\([^"]*\)".*$/\1/g')
+    done
 
     local ELEMENT_ID=$(echo ${RESPONSE} | \
 			      sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
@@ -174,9 +214,17 @@ function findElementByCSSselector() {
     local SELECTOR='css selector'
     local LOCATOR=$2
 
-    local RESPONSE=$(curl --request "POST" \
+    local RESPONSE=""
+    local STATE=""
+
+    while [ "${STATE}" != "success" ]
+    do
+        RESPONSE=$(curl --request "POST" \
 			  --data '{"using":"css selector","value":"'${LOCATOR}'"}' \
 			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element")
+        STATE=$(echo ${RESPONSE} | \
+			      sed -e 's/^.*"state":"\([^"]*\)".*$/\1/g')
+    done
 
     local ELEMENT_ID=$(echo ${RESPONSE} | \
 			      sed -e 's/^.*"ELEMENT":"\([^"]*\)".*$/\1/g')
@@ -213,6 +261,20 @@ function sendKeysToElement() {
 			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/element/"${ELEMENT_ID}"/value")
 }
 
+# executeScript
+#   指定されたJavascriptを実行させます。
+#     $1 セッションID
+#     $2 実行するJavascript
+#
+function executeScript() {
+    local SESSION_ID=$1
+    local SCRIPT=$2
+
+    local RESPONSE=$(curl --request "POST" \
+			  --data '{"script":"'${SCRIPT}'", "args":[]}' \
+			  "http://localhost:4444/wd/hub/session/"${SESSION_ID}"/execute/sync")
+}
+
 # deleteSession
 #   指定されたセッションを終了させます。
 #     $1 セッションID
@@ -223,4 +285,3 @@ function deleteSession() {
     local RESPONSE=$(curl --request "DELETE" \
 			  "http://localhost:4444/wd/hub/session/"${SESSION_ID})
 }
-
