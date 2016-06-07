@@ -22,12 +22,28 @@
     なお、環境変数DISPLAYは表示先の端末に応じて適宜変えてください。  
     `$ DISPLAY=:0.0 java -jar /home/hirofumi/Selenium/bin/selenium-server-standalone-2.53.0.jar`  
     次のメッセージが出力されたら起動完了です。  
-    `INFO - Selenium Server is up and running`
+    `INFO - Selenium Server is up and running`  
+    なお上記は Mozilla Firefox のみしか起動できません。他のブラウザも起動する場合はドライバを指定するため、次のようなオプションをつけます。
+    1. Google Chrome および Google Chrome on Android  
+    `-Dwebdriver.chrome.driver=C:/Selenium/bin/chromedriver_win32/chromedriver.exe`'  
+    2. Internet Explorer  
+    `-Dwebdriver.ie.driver=C:/Selenium/bin/IEDriverServer_x64/IEDriverServer.exe`  
+    3. Microsoft Edge  
+    `-Dwebdriver.edge.driver=C:/Program\ Files\ \(x86\)/Microsoft\ Web\ Driver/MicrosoftWebDriver.exe`  
 4. シェルスクリプトの起動  
    以上で準備完了です。シェルスクリプトを起動しましょう。  
-   `$ ./koedo.bash`  
+   1. Mozilla Firefoxを起動する場合  
+   `$ ./koedoUsingPageObject.bash`  
    または  
-   `$ ./koedoUsingPageObject.bash`
+   `$ ./koedoUsingPageObject.bash firefox`  
+   2. Google Chromeを起動する場合  
+   `$ ./koedoUsingPageObject.bash chrome`  
+   3. Internet Explorerを起動する場合  
+   `$ ./koedoUsingPageObject.bash ie`  
+   4. Microsoft Edgeを起動する場合  
+   `$ ./koedoUsingPageObject.bash edge`  
+   5. Google Chrome on Androidを起動する場合  
+   `$ ./koedoUsingPageObject.bash Android`  
 5. 参考文献
    1. WebDriver  
       Living Document  
