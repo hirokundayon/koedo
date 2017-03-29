@@ -38,3 +38,5 @@ WebDriverを使用して実装しています。Google Codeでサポートされ
   - FreeBSD(i386/amd64)
   - NetBSD(i386/amd64)
   - OpenBSD(i386/amd64)
+ 
+ 諸事情により、このプログラム群の更新は今後行なわれません。
